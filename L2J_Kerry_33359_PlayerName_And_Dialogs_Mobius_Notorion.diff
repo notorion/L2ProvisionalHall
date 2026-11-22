@@ -1,0 +1,136 @@
+diff --git dist/game/data/scripts/ai/others/ProvisionalHalls/33359-01.html dist/game/data/scripts/ai/others/ProvisionalHalls/33359-01.html
+index b33935405a7..fe79440ad96 100644
+--- dist/game/data/scripts/ai/others/ProvisionalHalls/33359-01.html
++++ dist/game/data/scripts/ai/others/ProvisionalHalls/33359-01.html
+@@ -1,11 +1,12 @@
+ <html><body><br><br><br>
+-Ah, hello!<br><br>
+-I am the Clan Hall Gatekeeper, Kerry. It's an honor to serve you.<br>
+-Do you need help with the <font color="FFFB99">Provisional Clan Hall</font>?<br>
++Hello, <font color="33CCCC">%playerName%</font>!<br><br>
++I am Kerry, the Clan Hall gatekeeper.<br1>
++It is an honor to serve you, <font color="33CCCC">%playerName%</font>.<br><br>
++Do you need teleport to the <font color="FFFB99">Provisional Clan Hall</font>?<br>
+ <br><br>
+ <center>
+-<button action="bypass -h Script ProvisionalHalls enter" value="Enter Clan Hall" width=180 height=27 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF">
++<button action="bypass -h Script ProvisionalHalls enter" value="Enter the Clan Hall" width=180 height=27 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF">
+ <br>
+ <button action="bypass -h Script ProvisionalHalls 33359-02.html" value="Learn more" width=180 height=27 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF">
+ <br>
+-</body></html>
+\ No newline at end of file
++</body></html>
+diff --git dist/game/data/scripts/ai/others/ProvisionalHalls/33359-01b.html dist/game/data/scripts/ai/others/ProvisionalHalls/33359-01b.html
+index 56cfaea8354..d48710cf339 100644
+--- dist/game/data/scripts/ai/others/ProvisionalHalls/33359-01b.html
++++ dist/game/data/scripts/ai/others/ProvisionalHalls/33359-01b.html
+@@ -1,13 +1,14 @@
+ <html><body><br><br><br>
+-Ah, hello!<br><br>
+-I am the Clan Hall Gatekeeper, Kerry. It's an honor to serve you.<br>
+-Do you need help with the <font color="FFFB99">Provisional Clan Hall</font>?<br>
++Hello, <font color="33CCCC">%playerName%</font>!<br><br>
++I am Kerry, the Clan Hall gatekeeper.<br1>
++It is an honor to serve you, <font color="33CCCC">%playerName%</font>.<br><br>
++Do you need teleport to the <font color="FFFB99">Provisional Clan Hall</font>?<br>
+ <br><br>
+ <center>
+-<button action="bypass -h Script ProvisionalHalls enter" value="Enter Clan Hall" width=180 height=27 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF">
++<button action="bypass -h Script ProvisionalHalls enter" value="Enter the Clan Hall" width=180 height=27 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF">
+ <br>
+ <button action="bypass -h Script ProvisionalHalls 33359-03.html" value="Buy Clan Hall" width=180 height=27 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF">
+ <br>
+ <button action="bypass -h Script ProvisionalHalls 33359-02.html" value="Learn more" width=180 height=27 back="L2UI_CT1.Button_DF_Down" fore="L2UI_CT1.Button_DF">
+ <br>
+-</body></html>
+\ No newline at end of file
++</body></html>
+diff --git dist/game/data/scripts/ai/others/ProvisionalHalls/33359-02.html dist/game/data/scripts/ai/others/ProvisionalHalls/33359-02.html
+index 66192e3ad92..9ff895c81ca 100644
+--- dist/game/data/scripts/ai/others/ProvisionalHalls/33359-02.html
++++ dist/game/data/scripts/ai/others/ProvisionalHalls/33359-02.html
+@@ -1,7 +1,7 @@
+ <html><body>
+ <br><br>
+ <center>
+-Participant,<br>
++<font color="33CCCC">%playerName%</font>,<br>
+ <center>
+ Aw, sorry, but you didn't win a <font color="FFFB99">Provisional Clan Hall</font>.<br><br>
+ The auction takes place every 2 weeks,<br>
+@@ -9,4 +9,4 @@ between 00:01 Saturday and 23:59 Sunday.<br>
+ <br>
+ <center>
+ Better luck at the next auction!<br>
+-</body></html>
+\ No newline at end of file
++</body></html>
+diff --git dist/game/data/scripts/ai/others/ProvisionalHalls/ProvisionalHalls.java dist/game/data/scripts/ai/others/ProvisionalHalls/ProvisionalHalls.java
+index ab0a8c59ea0..d7131b46594 100644
+--- dist/game/data/scripts/ai/others/ProvisionalHalls/ProvisionalHalls.java
++++ dist/game/data/scripts/ai/others/ProvisionalHalls/ProvisionalHalls.java
+@@ -39,6 +39,7 @@ import org.l2jmobius.gameserver.util.MapUtil;
+ /**
+  * Custom implementation for Provisional Clan Halls.
+- * @author Mobius
++ * @author Mobius, Notorion
++ * Updated: 20:43 22/11/2026
+  */
+ public class ProvisionalHalls extends Script
+ {
+@@ -92,7 +93,11 @@ public class ProvisionalHalls extends Script
+ 		String htmltext = null;
+ 		if (event.equals("33359-01.html") || event.equals("33359-02.html") || event.equals("33359-03.html"))
+ 		{
+-			htmltext = event;
++			htmltext = getHtm(player, event);
++			if (htmltext != null)
++			{
++				htmltext = htmltext.replace("%playerName%", player.getName());
++			}
+ 		}
+ 		else if (event.equals("buy"))
+ 		{
+@@ -114,7 +119,11 @@ public class ProvisionalHalls extends Script
+ 			}
+ 			else if ((dayOfWeek != Calendar.SATURDAY) && (dayOfWeek != Calendar.SUNDAY))
+ 			{
+-				htmltext = "33359-02.html";
++				htmltext = getHtm(player, "33359-02.html");
++				if (htmltext != null)
++				{
++					htmltext = htmltext.replace("%playerName%", player.getName());
++				}
+ 			}
+ 			else if (getQuestItemsCount(player, CURRENCY) < HALL_PRICE)
+ 			{
+@@ -176,7 +185,11 @@ public class ProvisionalHalls extends Script
+ 				}
+ 			}
+ 			
+-			htmltext = "33359-02.html";
++			htmltext = getHtm(player, "33359-02.html");
++			if (htmltext != null)
++			{
++				htmltext = htmltext.replace("%playerName%", player.getName());
++			}
+ 		}
+ 		else if (event.equals("leave"))
+ 		{
+@@ -216,12 +229,9 @@ public class ProvisionalHalls extends Script
+ 	{
+ 		final Calendar calendar = Calendar.getInstance();
+ 		final int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+-		if ((dayOfWeek != Calendar.SATURDAY) && (dayOfWeek != Calendar.SUNDAY))
+-		{
+-			return "33359-01.html";
+-		}
+-		
+-		return "33359-01b.html";
++		final String htmlFile = ((dayOfWeek != Calendar.SATURDAY) && (dayOfWeek != Calendar.SUNDAY)) ? "33359-01.html" : "33359-01b.html";
++		final String htmltext = getHtm(player, htmlFile);
++		return htmltext != null ? htmltext.replace("%playerName%", player.getName()) : null;
+ 	}
+ 	
+ 	public static void main(String[] args)
